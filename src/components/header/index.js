@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { RiCloseLine } from "react-icons/ri";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,6 +30,7 @@ const Header = () => {
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const [hovered, setHovered] = useState(false);
 
   return (
     <Container whiteBg={pathname === "/auth" ? 1 : 0}>
@@ -66,6 +67,12 @@ const Header = () => {
         <BtnContainer>
           <DemoBtn>Get Policies</DemoBtn>
           <NavIconCont
+            onMouseEnter={() => {
+              setHovered(true);
+            }}
+            onMouseLeave={() => {
+              setHovered(false);
+            }}
             onClick={() => {
               navigate("/auth");
             }}
@@ -73,7 +80,7 @@ const Header = () => {
             <NavIconImg
               alt="img"
               src={
-                pathname === "/auth"
+                pathname === "/auth" && !hovered
                   ? "https://sprinto.com/wp-content/uploads/2025/02/user-icon-dark.svg"
                   : "https://sprinto.com/wp-content/uploads/2025/02/user-icon.svg"
               }
