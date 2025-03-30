@@ -5,6 +5,7 @@ import API from "utils/api";
 
 const PolicyScreen = () => {
   const {
+    state: { user },
     actions: { updatePolicies },
   } = useStore();
 
@@ -17,9 +18,13 @@ const PolicyScreen = () => {
     getPolicies();
   }, []);
 
+  if (!user) {
+    return <></>;
+  }
+
   return (
     <Container>
-      <ContainerTitle>Hello, Engineer</ContainerTitle>
+      <ContainerTitle>Hello, {user?.name}</ContainerTitle>
     </Container>
   );
 };
