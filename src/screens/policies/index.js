@@ -1,8 +1,27 @@
-import React from "react";
-import { Container } from "styles";
+import React, { useEffect } from "react";
+import { Container, ContainerTitle } from "./styles";
+import { useStore } from "store";
+import API from "utils/api";
 
 const PolicyScreen = () => {
-  return <Container>Policies</Container>;
+  const {
+    actions: { updatePolicies },
+  } = useStore();
+
+  async function getPolicies() {
+    const policyResponse = await API("policies");
+    await updatePolicies(policyResponse.data);
+  }
+
+  useEffect(() => {
+    getPolicies();
+  }, []);
+
+  return (
+    <Container>
+      <ContainerTitle>Hello, Engineer</ContainerTitle>
+    </Container>
+  );
 };
 
 export default PolicyScreen;

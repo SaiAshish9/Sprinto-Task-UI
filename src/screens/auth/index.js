@@ -53,7 +53,7 @@ const AuthScreen = () => {
             }}
             onClick={() => {
               updateUser(user);
-              navigate("/");
+              navigate("/policies");
             }}
           >
             <DeveloperImg src={user.profilePicUrl} alt="" />

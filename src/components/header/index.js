@@ -79,13 +79,16 @@ const Header = () => {
         )}
 
         <BtnContainer>
-          <DemoBtn
-            onClick={() => {
-              navigate("/policies");
-            }}
-          >
-            Get Policies
-          </DemoBtn>
+          {pathname !== "/policies" && (
+            <DemoBtn
+              onClick={() => {
+                navigate("/policies");
+              }}
+            >
+              Get Policies
+            </DemoBtn>
+          )}
+
           {!user && (
             <NavIconCont
               onMouseEnter={() => {
@@ -101,7 +104,7 @@ const Header = () => {
               <NavIconImg
                 alt="img"
                 src={
-                  pathname === "/auth" && !hovered
+                  ["/auth", "/policies"].includes(pathname) && !hovered
                     ? "https://sprinto.com/wp-content/uploads/2025/02/user-icon-dark.svg"
                     : "https://sprinto.com/wp-content/uploads/2025/02/user-icon.svg"
                 }
