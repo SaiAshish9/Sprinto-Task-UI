@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { RiCloseLine } from "react-icons/ri";
 import { useLocation, useNavigate } from "react-router-dom";
+import { SlLogout } from "react-icons/sl";
 
 import {
   BtnContainer,
@@ -9,15 +10,18 @@ import {
   DemoBtn,
   IconCont,
   LogoImg,
+  LogoutCont,
   NavContainer,
   NavIconCont,
   NavIconImg,
   NavItem,
   NavItemCont,
+  ProfileAvatar,
   Span,
   Title,
   TopContainer,
 } from "./styles";
+import { useStore } from "store";
 
 const Header = () => {
   const NavItems = [
@@ -32,17 +36,25 @@ const Header = () => {
   const { pathname } = useLocation();
   const [hovered, setHovered] = useState(false);
 
+  const {
+    state: { user },
+    actions: { updateUser },
+  } = useStore();
+
   return (
-    <Container whiteBg={pathname === "/auth" ? 1 : 0}>
-      <TopContainer>
-        <Title left={1}>SOC2 Compliance Blueprint is Live!</Title>
-        <Title>
-          <Span>Try Now</Span> <FiArrowRight />
-        </Title>
-        <IconCont>
-          <RiCloseLine color="#fff" size={21} />
-        </IconCont>
-      </TopContainer>
+    <Container whiteBg={pathname !== "/" ? 1 : 0}>
+      {pathname !== "/policies" && (
+        <TopContainer>
+          <Title left={1}>SOC2 Compliance Blueprint is Live!</Title>
+          <Title>
+            <Span>Try Now</Span> <FiArrowRight />
+          </Title>
+          <IconCont>
+            <RiCloseLine color="#fff" size={21} />
+          </IconCont>
+        </TopContainer>
+      )}
+
       <NavContainer>
         <LogoImg
           onClick={() => {
@@ -56,36 +68,66 @@ const Header = () => {
           alt=""
         />
 
-        <NavItemCont>
-          {NavItems.map((item, key) => (
-            <NavItem dark={pathname === "/auth" ? 1 : 0} key={key}>
-              {item}
-            </NavItem>
-          ))}
-        </NavItemCont>
+        {pathname !== "/policies" && (
+          <NavItemCont>
+            {NavItems.map((item, key) => (
+              <NavItem dark={pathname !== "/" ? 1 : 0} key={key}>
+                {item}
+              </NavItem>
+            ))}
+          </NavItemCont>
+        )}
 
         <BtnContainer>
-          <DemoBtn>Get Policies</DemoBtn>
-          <NavIconCont
-            onMouseEnter={() => {
-              setHovered(true);
-            }}
-            onMouseLeave={() => {
-              setHovered(false);
-            }}
+          <DemoBtn
             onClick={() => {
-              navigate("/auth");
+              navigate("/policies");
             }}
           >
-            <NavIconImg
-              alt="img"
-              src={
-                pathname === "/auth" && !hovered
-                  ? "https://sprinto.com/wp-content/uploads/2025/02/user-icon-dark.svg"
-                  : "https://sprinto.com/wp-content/uploads/2025/02/user-icon.svg"
-              }
-            />
-          </NavIconCont>
+            Get Policies
+          </DemoBtn>
+          {!user && (
+            <NavIconCont
+              onMouseEnter={() => {
+                setHovered(true);
+              }}
+              onMouseLeave={() => {
+                setHovered(false);
+              }}
+              onClick={() => {
+                navigate("/auth");
+              }}
+            >
+              <NavIconImg
+                alt="img"
+                src={
+                  pathname === "/auth" && !hovered
+                    ? "https://sprinto.com/wp-content/uploads/2025/02/user-icon-dark.svg"
+                    : "https://sprinto.com/wp-content/uploads/2025/02/user-icon.svg"
+                }
+              />
+            </NavIconCont>
+          )}
+          {user && (
+            <LogoutCont>
+              <ProfileAvatar
+                onClick={() => {
+                  navigate("/auth");
+                }}
+                alt="img"
+                src={user.profilePicUrl}
+              />
+              <SlLogout
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  navigate("/");
+                  updateUser(null);
+                }}
+                size={18}
+                color={pathname === "/" ? "#fff" : "#000"}
+              />
+            </LogoutCont>
+          )}
         </BtnContainer>
       </NavContainer>
     </Container>

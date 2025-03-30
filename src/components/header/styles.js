@@ -141,3 +141,16 @@ export const IconCont = styled.div`
   position: absolute;
   right: 0.5rem;
 `;
+
+export const ProfileAvatar = styled.img`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-right: 1rem;
+`;
+
+export const LogoutCont = styled.div`
+  display: flex;
+  align-items: center;
+`;
