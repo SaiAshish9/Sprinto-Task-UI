@@ -30,6 +30,7 @@ const PolicyScreen = () => {
   async function getPolicies() {
     const policyResponse = await API.post("user_policies", {
       userId: user.id,
+      requiresHRAcknowledgement: user.role === "HR",
     });
 
     const data = policyResponse.data.map((policy, index) => ({
@@ -43,10 +44,11 @@ const PolicyScreen = () => {
     updatePolicies([]);
   }
 
-  async function onChange(policyId) {
+  async function onChange(policyId, requiresHRAcknowledgement) {
     const policyResponse = await API.post("acknowledge_policy", {
       userId: user.id,
       policyId,
+      requiresHRAcknowledgement,
     });
 
     const data = policyResponse.data.map((policy, index) => ({
@@ -78,7 +80,9 @@ const PolicyScreen = () => {
       render: (_, record) => (
         <AcknowledgeCont>
           <StyledCheckbox
-            onChange={() => onChange(record.id)}
+            onChange={() =>
+              onChange(record.id, record.requiresHRAcknowledgement)
+            }
             checked={record.acknowledged}
           />
           <AcknowledgementText>
@@ -103,7 +107,7 @@ const PolicyScreen = () => {
       <ContainerTitle>Hello, {user.name}</ContainerTitle>
       <ContainerTitle sm={1} highlight={1}>
         Please, <ContainerSpan>Acknowledge</ContainerSpan> The Approved Policies
-        (Max: <ContainerSpan>15</ContainerSpan>)
+        (Max: <ContainerSpan>{user.role === "HR" ? 3 : 15}</ContainerSpan>)
       </ContainerTitle>
       <StyledTable dataSource={policies} columns={columns} pagination={false} />
     </Container>
