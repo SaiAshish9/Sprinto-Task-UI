@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { HomeScreen } from "./screens";
 import { Route, Routes, useLocation } from "react-router-dom";
 import AuthScreen from "screens/auth";
@@ -7,6 +7,7 @@ import styled, { css } from "styled-components";
 import { LogoImg } from "styles";
 import { LogoNestedImg } from "styles";
 import PolicyScreen from "screens/policies";
+import { useStore } from "store";
 
 const Container = styled.div`
   width: 100vw;
@@ -22,6 +23,32 @@ const Container = styled.div`
 
 const App = () => {
   const { pathname } = useLocation();
+
+  const {
+    actions: { updatePolicies, updateUser, updateUsers },
+  } = useStore();
+
+  async function populateRecords() {
+    const user = localStorage.getItem("user");
+    const users = localStorage.getItem("users");
+    const policies = localStorage.getItem("policies");
+
+    if (user) {
+      await updateUser(JSON.parse(user));
+    }
+
+    if (users) {
+      await updateUsers(JSON.parse(users));
+    }
+
+    if (policies) {
+      await updatePolicies(JSON.parse(policies));
+    }
+  }
+
+  useEffect(() => {
+    populateRecords();
+  }, []);
 
   return (
     <Container whiteBg={pathname !== "/" ? 1 : 0}>

@@ -123,8 +123,9 @@ const Header = () => {
               <SlLogout
                 style={{ cursor: "pointer" }}
                 onClick={() => {
-                  navigate("/");
                   updateUser(null);
+                  localStorage.setItem("user", null);
+                  navigate("/");
                 }}
                 size={18}
                 color={pathname === "/" ? "#fff" : "#000"}

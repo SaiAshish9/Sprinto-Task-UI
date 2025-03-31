@@ -4,7 +4,7 @@ export default function useActions(state, dispatch) {
   const updateUsers = (user) => dispatch({ type: UPDATE_USERS, payload: user });
   const updateUser = (user) =>
     dispatch({ type: UPDATE_ACTIVE_USER, payload: user });
-  const updatePolicies = () => dispatch({ type: UPDATE_POLICIES });
+  const updatePolicies = (policies) => dispatch({ type: UPDATE_POLICIES, payload: policies });
 
   return { updateUsers, updateUser, updatePolicies };
 }

@@ -25,13 +25,21 @@ const AuthScreen = () => {
   async function getUsers() {
     const usersResponse = await API("users");
     await updateUsers(usersResponse.data);
+    localStorage.setItem("users", JSON.stringify(usersResponse.data));
   }
 
   useEffect(() => {
     getUsers();
   }, []);
 
-  const colors = ["#b6e8ff", "#ffe4ae", "#b7ffd1", "#fdedf4", "#e3e3e3"];
+  const colors = [
+    "#b6e8ff",
+    "#ffe4ae",
+    "#b7ffd1",
+    "#fdedf4",
+    "#e3e3e3",
+    "#e3e9ff",
+  ];
 
   return (
     <Container>
@@ -42,7 +50,7 @@ const AuthScreen = () => {
       </ContentTitle>
 
       <ImgContRow>
-        {users?.map((user, _) => (
+        {users?.map((user, key) => (
           <ImgCont
             key={user.id}
             onMouseEnter={() => {
@@ -53,11 +61,12 @@ const AuthScreen = () => {
             }}
             onClick={() => {
               updateUser(user);
+              localStorage.setItem("user", JSON.stringify(user));
               navigate("/policies");
             }}
           >
             <DeveloperImg src={user.profilePicUrl} alt="" />
-            <Tag selected={selected === user.id ? 1 : 0} color={colors[0]}>
+            <Tag selected={selected === user.id ? 1 : 0} color={colors[+key]}>
               {user.name}
             </Tag>
           </ImgCont>
