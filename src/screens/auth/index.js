@@ -11,25 +11,33 @@ import {
 import API from "utils/api";
 import { useStore } from "store";
 import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const AuthScreen = () => {
   const [selected, setSelected] = useState(-1);
+  const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
+  const query = searchParams.get("mimic");
 
   const {
-    state: { users },
+    state: { users, user },
     actions: { updateUsers, updateUser },
   } = useStore();
 
   async function getUsers() {
-    const usersResponse = await API("users");
+    const usersResponse = await API(
+      "users" +
+        (user?.role === "CUSTOMER" && query === "true"
+          ? "?mimic=true&&customerId=" + user.id
+          : "")
+    );
     await updateUsers(usersResponse.data);
   }
 
   useEffect(() => {
     getUsers();
-  }, []);
+  }, [user, searchParams]);
 
   const colors = [
     "#b6e8ff",
@@ -43,30 +51,45 @@ const AuthScreen = () => {
   return (
     <Container>
       <ContentTitle>
-        Please
-        <ContentSpan> Authenticate </ContentSpan>
-        As
+        {user?.role === "CUSTOMER" ? (
+          <>
+            Hello <ContentSpan> CUSTOMER</ContentSpan>, Please
+            <ContentSpan> Authenticate </ContentSpan>
+            As
+          </>
+        ) : (
+          <>
+            {" "}
+            Please
+            <ContentSpan> Authenticate </ContentSpan>
+            As
+          </>
+        )}
       </ContentTitle>
 
       <ImgContRow>
-        {users?.map((user, key) => (
+        {users?.map((userItem, key) => (
           <ImgCont
-            key={user.id}
+            key={userItem.id}
             onMouseEnter={() => {
-              setSelected(user.id);
+              setSelected(userItem.id);
             }}
             onMouseLeave={() => {
               setSelected(-1);
             }}
             onClick={() => {
-              updateUser(user);
-              localStorage.setItem("user", JSON.stringify(user));
-              navigate("/policies");
+              let prevUser = { ...user };
+              updateUser(userItem);
+              localStorage.setItem("user", JSON.stringify(userItem));
+              navigate(
+                "/policies" +
+                  (query ? `?mimic=true&&customerId=${prevUser.id}` : "")
+              );
             }}
           >
-            <DeveloperImg src={user.profilePicUrl} alt="" />
-            <Tag selected={selected === user.id ? 1 : 0} color={colors[+key]}>
-              {user.name}
+            <DeveloperImg src={userItem.profilePicUrl} alt="" />
+            <Tag selected={selected === userItem.id ? 1 : 0} color={colors[+key]}>
+              {userItem.name}
             </Tag>
           </ImgCont>
         ))}
