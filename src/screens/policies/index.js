@@ -73,7 +73,7 @@ const PolicyScreen = () => {
         policyId,
         ...(role !== undefined ? { role } : {}),
         ...(customerId !== undefined ? { customerId } : {}),
-        ...(version !== undefined ? { version } : {}),
+        // ...(version !== undefined ? { version: version + 0.1 } : {}),
       });
 
       if (policyResponse.data.statusCode === 500) {
@@ -113,13 +113,13 @@ const PolicyScreen = () => {
     },
     {
       title: "Version",
-      key: "version",
+      key: "acknowledgementType",
       render: (_, record) => (
         <AcknowledgeCont>
           <AcknowledgementText>
             {record.version.toFixed(1)}
             {" ("}
-            {(record.version === 1 ? "New Joining" : "Periodic") + ")"}
+            {record.acknowledgementType + ")"}
           </AcknowledgementText>
         </AcknowledgeCont>
       ),
