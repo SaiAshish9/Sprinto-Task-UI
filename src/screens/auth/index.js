@@ -25,7 +25,6 @@ const AuthScreen = () => {
   async function getUsers() {
     const usersResponse = await API("users");
     await updateUsers(usersResponse.data);
-    localStorage.setItem("users", JSON.stringify(usersResponse.data));
   }
 
   useEffect(() => {

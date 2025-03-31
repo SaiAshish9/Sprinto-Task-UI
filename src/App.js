@@ -30,20 +30,18 @@ const App = () => {
 
   async function populateRecords() {
     const user = localStorage.getItem("user");
-    const users = localStorage.getItem("users");
-    const policies = localStorage.getItem("policies");
 
     if (user) {
       await updateUser(JSON.parse(user));
     }
 
-    if (users) {
-      await updateUsers(JSON.parse(users));
-    }
+    // if (users) {
+    //   await updateUsers(JSON.parse(users));
+    // }
 
-    if (policies) {
-      await updatePolicies(JSON.parse(policies));
-    }
+    // if (policies) {
+    //   await updatePolicies(JSON.parse(policies));
+    // }
   }
 
   useEffect(() => {
