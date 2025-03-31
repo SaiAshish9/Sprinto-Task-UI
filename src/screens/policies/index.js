@@ -60,7 +60,7 @@ const PolicyScreen = () => {
       const policyResponse = await API.post(url, {
         userId: user.id,
         policyId,
-        role,
+        ...(role !== undefined ? { role } : {}),
       });
 
       if (policyResponse.data.statusCode === 500) {
@@ -68,11 +68,15 @@ const PolicyScreen = () => {
         return;
       }
 
-      const data = policyResponse.data.map((policy, index) => ({
-        ...policy,
-        sno: index + 1,
-      }));
-      updatePolicies(data);
+      if (Array.isArray(policyResponse.data)) {
+        const data = policyResponse.data.map((policy, index) => ({
+          ...policy,
+          sno: index + 1,
+        }));
+        updatePolicies(data);
+      } else {
+        getPolicies(null);
+      }
     } catch (e) {
       alert(e.message);
     }
@@ -210,11 +214,17 @@ const PolicyScreen = () => {
   if (["CUSTOMER"].includes(user?.role)) {
     columns.push({
       title: "Select Template",
-      key: "template",
+      key: "selectedByCustomer",
       render: (_, record) => (
-        <AcknowledgeCont>
-          <AcknowledgementText ack={record.acknowledgedByAll ? 1 : 0}>
-            {record.acknowledgedByAll ? "Select Template" : "Selected"}
+        <AcknowledgeCont
+          onClick={async () => {
+            if (!record.selectedByCustomer) {
+              onEmployeeActionChange(record.id, null, "customerTemplate");
+            }
+          }}
+        >
+          <AcknowledgementText ack={record.selectedByCustomer ? 1 : 0}>
+            {!record.selectedByCustomer ? "Select Template" : "Selected"}
           </AcknowledgementText>
         </AcknowledgeCont>
       ),
@@ -227,7 +237,19 @@ const PolicyScreen = () => {
       key: "metadata",
       render: (_, record) => (
         <AcknowledgeCont>
-          <AcknowledgementText>{"-"}</AcknowledgementText>
+          <AcknowledgementText>{"{}"}</AcknowledgementText>
+        </AcknowledgeCont>
+      ),
+    });
+  }
+
+  if (["CUSTOMER"].includes(user?.role)) {
+    columns.push({
+      title: "Software Upgrade",
+      key: "metadata",
+      render: (_, record) => (
+        <AcknowledgeCont>
+          <AcknowledgementText>{"Upgrade Now, Latest"}</AcknowledgementText>
         </AcknowledgeCont>
       ),
     });
