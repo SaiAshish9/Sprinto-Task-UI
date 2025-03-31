@@ -17,12 +17,15 @@ import { useStore } from "store";
 import API from "utils/api";
 import { notification } from "antd";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const PolicyScreen = () => {
   const {
     state: { user, policies },
     actions: { updatePolicies },
   } = useStore();
+
+  const navigate = useNavigate();
 
   const [modifiedSelected, setModifiedSelected] = useState(false);
 
@@ -237,7 +240,9 @@ const PolicyScreen = () => {
       key: "metadata",
       render: (_, record) => (
         <AcknowledgeCont>
-          <AcknowledgementText>{"{}"}</AcknowledgementText>
+          <AcknowledgementText>
+            {JSON.stringify(record.metadata ?? {})}
+          </AcknowledgementText>
         </AcknowledgeCont>
       ),
     });
@@ -246,10 +251,12 @@ const PolicyScreen = () => {
   if (["CUSTOMER"].includes(user?.role)) {
     columns.push({
       title: "Software Upgrade",
-      key: "metadata",
+      key: "upgradeRequired",
       render: (_, record) => (
         <AcknowledgeCont>
-          <AcknowledgementText>{"Upgrade Now, Latest"}</AcknowledgementText>
+          <AcknowledgementText ack={record.upgradeRequired ? 0 : 1}>
+            {record.upgradeRequired ? "Upgrade Now" : "Latest"}
+          </AcknowledgementText>
         </AcknowledgeCont>
       ),
     });
@@ -270,14 +277,18 @@ const PolicyScreen = () => {
           name: "Vulnerability Management Policy (Manual)",
           version: 1,
           metadata: {
-            SLA: true
+            SLA: true,
           },
           createdAt: new Date().toISOString,
           updatedAt: new Date().toISOString,
         },
       ],
     });
-    onEmployeeActionChange(policyResponse.data?.[0]?.id, null, "customerTemplate");
+    onEmployeeActionChange(
+      policyResponse.data?.[0]?.id,
+      null,
+      "customerTemplate"
+    );
     await getPolicies(null);
   }
 
@@ -294,7 +305,13 @@ const PolicyScreen = () => {
             >
               Create Template
             </ContainerSubTitle>
-            <ContainerSubTitle>Acknowledge Employee Policies</ContainerSubTitle>
+            <ContainerSubTitle
+              onClick={() => {
+                navigate("/auth?mimic=true");
+              }}
+            >
+              Acknowledge Employee Policies
+            </ContainerSubTitle>
           </div>
         )}
       </CustomerTemplateContainer>
