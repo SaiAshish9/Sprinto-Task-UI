@@ -14,6 +14,7 @@ import {
 import { useStore } from "store";
 import API from "utils/api";
 import { notification } from "antd";
+import moment from "moment";
 
 const PolicyScreen = () => {
   const {
@@ -106,7 +107,7 @@ const PolicyScreen = () => {
     },
   ];
 
-  if (!["ADMIN", "CUSTOMER"].includes(user?.role)) {
+  if (!["ADMIN", "CUSTOMER", "CXO"].includes(user?.role)) {
     columns.push({
       title: "Actions",
       key: "acknowledged",
@@ -172,7 +173,7 @@ const PolicyScreen = () => {
 
   if (["ADMIN", "CXO"].includes(user?.role)) {
     columns.push({
-      title: "Acknowledged By All Engineers",
+      title: "Acknowledged By All Employees",
       key: "acknowledgedByAll",
       render: (_, record) => (
         <AcknowledgeCont>
@@ -192,6 +193,47 @@ const PolicyScreen = () => {
     });
   }
 
+  if (["CXO"].includes(user?.role)) {
+    columns.push({
+      title: "Last Modified",
+      key: "updatedAt",
+      render: (_, record) => (
+        <AcknowledgementText>
+          {moment(record.updatedAt).fromNow()}
+        </AcknowledgementText>
+      ),
+    });
+  }
+
+  if (["CUSTOMER"].includes(user?.role)) {
+    columns.push({
+      title: "Select Template",
+      key: "template",
+      render: (_, record) => (
+        <AcknowledgeCont>
+          <AcknowledgementText ack={record.acknowledgedByAll ? 1 : 0}>
+            {record.acknowledgedByAll ? "Select Template" : "Selected"}
+          </AcknowledgementText>
+        </AcknowledgeCont>
+      ),
+    });
+  }
+
+
+  if (["CUSTOMER"].includes(user?.role)) {
+    columns.push({
+      title: "Metadata",
+      key: "metadata",
+      render: (_, record) => (
+        <AcknowledgeCont>
+          <AcknowledgementText ack={0}>
+            {"View"}
+          </AcknowledgementText>
+        </AcknowledgeCont>
+      ),
+    });
+  }
+
   if (!user) {
     return null;
   }
@@ -199,6 +241,8 @@ const PolicyScreen = () => {
   return (
     <Container>
       <ContainerTitle>Hello, {user.name}</ContainerTitle>
+      <ContainerTitle>Create Template</ContainerTitle>
+
       {user?.role && (
         <>
           {user.role === "ADMIN" ? (

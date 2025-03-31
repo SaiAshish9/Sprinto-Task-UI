@@ -54,6 +54,7 @@ export const StyledCheckbox = styled(Checkbox)``;
 
 export const AcknowledgementText = styled.div`
   margin-left: 0.5rem;
+  cursor: pointer;
 
   ${({ ack }) =>
     ack === 1 &&
