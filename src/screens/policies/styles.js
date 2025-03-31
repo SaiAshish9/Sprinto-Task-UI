@@ -30,6 +30,17 @@ export const ContainerTitle = styled.p`
     `}
 `;
 
+export const ContainerSubTitle = styled.p`
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  cursor: pointer;
+
+  &:hover {
+    color: #336aea;
+  }
+`;
+
 export const ContainerSpan = styled.span`
   color: #ff5b22;
 `;
@@ -80,4 +91,10 @@ export const ModifiedPoliciesText = styled.div`
 
 export const ModifiedPoliciesCont = styled.div`
   margin-left: 0.4rem;
+`;
+
+export const CustomerTemplateContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;

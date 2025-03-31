@@ -1,10 +1,12 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AcknowledgeCont,
   AcknowledgementText,
   Container,
   ContainerSpan,
   ContainerTitle,
+  ContainerSubTitle,
+  CustomerTemplateContainer,
   ModifiedPoliciesCont,
   ModifiedPoliciesText,
   StatusText,
@@ -219,16 +221,13 @@ const PolicyScreen = () => {
     });
   }
 
-
   if (["CUSTOMER"].includes(user?.role)) {
     columns.push({
       title: "Metadata",
       key: "metadata",
       render: (_, record) => (
         <AcknowledgeCont>
-          <AcknowledgementText ack={0}>
-            {"View"}
-          </AcknowledgementText>
+          <AcknowledgementText>{"-"}</AcknowledgementText>
         </AcknowledgeCont>
       ),
     });
@@ -240,8 +239,15 @@ const PolicyScreen = () => {
 
   return (
     <Container>
-      <ContainerTitle>Hello, {user.name}</ContainerTitle>
-      <ContainerTitle>Create Template</ContainerTitle>
+      <CustomerTemplateContainer>
+        <ContainerTitle>Hello, {user.name}</ContainerTitle>
+        {user?.role === "CUSTOMER" && (
+          <div>
+            <ContainerSubTitle>Create Template</ContainerSubTitle>
+            <ContainerSubTitle>Acknowledge Employee Policies</ContainerSubTitle>
+          </div>
+        )}
+      </CustomerTemplateContainer>
 
       {user?.role && (
         <>

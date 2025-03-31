@@ -62,6 +62,7 @@ export const NavItem = styled.p`
   color: #fff;
   cursor: pointer;
   padding: 0px 24px;
+  margin: 0px;
 
   &:hover {
     color: #ff5b22;
