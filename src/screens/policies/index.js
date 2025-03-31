@@ -259,13 +259,41 @@ const PolicyScreen = () => {
     return null;
   }
 
+  async function createTemplate() {
+    const policyResponse = await API.post("policies", {
+      policies: [
+        {
+          type: "INFOSEC",
+          acknowledged: true,
+          createdByCustomer: true,
+          approved: true,
+          name: "Vulnerability Management Policy (Manual)",
+          version: 1,
+          metadata: {
+            SLA: true
+          },
+          createdAt: new Date().toISOString,
+          updatedAt: new Date().toISOString,
+        },
+      ],
+    });
+    onEmployeeActionChange(policyResponse.data?.[0]?.id, null, "customerTemplate");
+    await getPolicies(null);
+  }
+
   return (
     <Container>
       <CustomerTemplateContainer>
         <ContainerTitle>Hello, {user.name}</ContainerTitle>
         {user?.role === "CUSTOMER" && (
           <div>
-            <ContainerSubTitle>Create Template</ContainerSubTitle>
+            <ContainerSubTitle
+              onClick={() => {
+                createTemplate();
+              }}
+            >
+              Create Template
+            </ContainerSubTitle>
             <ContainerSubTitle>Acknowledge Employee Policies</ContainerSubTitle>
           </div>
         )}
