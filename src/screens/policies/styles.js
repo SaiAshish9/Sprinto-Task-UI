@@ -13,7 +13,7 @@ export const ContainerTitle = styled.p`
     highlight === 1 &&
     css`
       color: #ff5b22;
-    `}
+    `};
 
   ${({ sm }) =>
     sm === 1 &&
@@ -21,6 +21,12 @@ export const ContainerTitle = styled.p`
       font-size: 15px;
       margin-bottom: 2rem;
       color: #000;
+    `};
+
+  ${({ noM }) =>
+    noM === 1 &&
+    css`
+      margin-bottom: 0rem;
     `}
 `;
 
@@ -48,4 +54,29 @@ export const StyledCheckbox = styled(Checkbox)``;
 
 export const AcknowledgementText = styled.div`
   margin-left: 0.5rem;
+
+  ${({ ack }) =>
+    ack === 1 &&
+    css`
+      color: #00c352;
+      font-weight: 600;
+    `}
+
+  ${({ ack }) =>
+    ack === 0 &&
+    css`
+      color: #ff5b22;
+      font-weight: 600;
+    `}
+`;
+
+export const ModifiedPoliciesText = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 2rem;
+`;
+
+export const ModifiedPoliciesCont = styled.div`
+  margin-left: 0.4rem;
 `;

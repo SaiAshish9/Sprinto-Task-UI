@@ -1,10 +1,12 @@
-import React, { use, useEffect } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
   AcknowledgeCont,
   AcknowledgementText,
   Container,
   ContainerSpan,
   ContainerTitle,
+  ModifiedPoliciesCont,
+  ModifiedPoliciesText,
   StatusText,
   StyledCheckbox,
   StyledTable,
@@ -19,19 +21,24 @@ const PolicyScreen = () => {
     actions: { updatePolicies },
   } = useStore();
 
+  const [modifiedSelected, setModifiedSelected] = useState(false);
+
   useEffect(() => {
     if (user) {
-      getPolicies();
+      getPolicies(null);
     }
     return () => {
       clearPolicies();
     };
   }, [user]);
 
-  async function getPolicies() {
+  async function getPolicies(payload) {
     const policyResponse = await API.post("user_policies", {
       userId: user.id,
       role: user.role,
+      ...(payload?.modified !== undefined
+        ? { modified: payload.modified }
+        : {}),
     });
 
     const data = policyResponse.data.map((policy, index) => ({
@@ -67,7 +74,7 @@ const PolicyScreen = () => {
       alert(e.message);
     }
   }
-  
+
   let columns = [
     {
       title: "S.No.",
@@ -84,6 +91,19 @@ const PolicyScreen = () => {
       dataIndex: "type",
       key: "type",
     },
+    {
+      title: "Version",
+      key: "version",
+      render: (_, record) => (
+        <AcknowledgeCont>
+          <AcknowledgementText>
+            {record.version.toFixed(1)}
+            {" ("}
+            {(record.version === 1 ? "New Joining" : "Periodic") + ")"}
+          </AcknowledgementText>
+        </AcknowledgeCont>
+      ),
+    },
   ];
 
   if (!["ADMIN", "CUSTOMER"].includes(user?.role)) {
@@ -93,7 +113,9 @@ const PolicyScreen = () => {
       render: (_, record) => (
         <AcknowledgeCont>
           <StyledCheckbox
-            onChange={() => onEmployeeActionChange(record.id, user.role, "acknowledge_policy")}
+            onChange={() =>
+              onEmployeeActionChange(record.id, user.role, "acknowledge_policy")
+            }
             checked={record.acknowledged}
           />
           <AcknowledgementText>
@@ -111,7 +133,9 @@ const PolicyScreen = () => {
       render: (_, record) => (
         <AcknowledgeCont>
           <StyledCheckbox
-            onChange={() => onEmployeeActionChange(record.id, user.role, "approve_policy")}
+            onChange={() =>
+              onEmployeeActionChange(record.id, user.role, "approve_policy")
+            }
             checked={record.approved}
           />
           <AcknowledgementText>
@@ -129,11 +153,31 @@ const PolicyScreen = () => {
       render: (_, record) => (
         <AcknowledgeCont>
           <StyledCheckbox
-            onChange={() => onEmployeeActionChange(record.id, user.role, "requires_hr_acknowledgement")}
+            onChange={() =>
+              onEmployeeActionChange(
+                record.id,
+                user.role,
+                "requires_hr_acknowledgement"
+              )
+            }
             checked={record.requiresHRAcknowledgement}
           />
           <AcknowledgementText>
             {record.requiresHRAcknowledgement ? "Required" : "Not Required"}
+          </AcknowledgementText>
+        </AcknowledgeCont>
+      ),
+    });
+  }
+
+  if (["ADMIN", "CXO"].includes(user?.role)) {
+    columns.push({
+      title: "Acknowledged By All Engineers",
+      key: "acknowledgedByAll",
+      render: (_, record) => (
+        <AcknowledgeCont>
+          <AcknowledgementText ack={record.acknowledgedByAll ? 1 : 0}>
+            {record.acknowledgedByAll ? "Yes" : "No"}
           </AcknowledgementText>
         </AcknowledgeCont>
       ),
@@ -162,16 +206,41 @@ const PolicyScreen = () => {
               Please, <ContainerSpan>Approve</ContainerSpan> The Policies
             </ContainerTitle>
           ) : (
-            <ContainerTitle sm={1} highlight={1}>
-              Please, <ContainerSpan>Acknowledge</ContainerSpan> The Approved
-              Policies (Max:{" "}
-              <ContainerSpan>{user.role === "HR" ? 3 : 15}</ContainerSpan>)
-            </ContainerTitle>
+            ["ENGINEER", "HR"].includes(user.role) && (
+              <ContainerTitle sm={1} highlight={1}>
+                Please, <ContainerSpan>Acknowledge</ContainerSpan> The Approved
+                Policies (Max:{" "}
+                <ContainerSpan>{user.role === "HR" ? 3 : 15}</ContainerSpan>)
+              </ContainerTitle>
+            )
+          )}
+          {["ENGINEER", "HR"].includes(user.role) && (
+            <ModifiedPoliciesText>
+              <StyledCheckbox
+                onChange={async () => {
+                  await getPolicies({ modified: !modifiedSelected });
+                  setModifiedSelected((c) => !c);
+                }}
+                checked={modifiedSelected}
+              />
+              <ModifiedPoliciesCont>
+                <ContainerTitle noM={1} sm={1} highlight={1}>
+                  {" "}
+                  Show Only The <ContainerSpan>Modified Policies</ContainerSpan>
+                </ContainerTitle>
+              </ModifiedPoliciesCont>
+            </ModifiedPoliciesText>
           )}
         </>
       )}
 
-      <StyledTable dataSource={policies} columns={columns} pagination={false} />
+      {user && policies?.length > 0 && (
+        <StyledTable
+          dataSource={policies}
+          columns={columns}
+          pagination={false}
+        />
+      )}
     </Container>
   );
 };
