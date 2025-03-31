@@ -17,15 +17,17 @@ import { useStore } from "store";
 import API from "utils/api";
 import { notification } from "antd";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const PolicyScreen = () => {
   const {
     state: { user, policies },
     actions: { updatePolicies },
   } = useStore();
+  const [searchParams] = useSearchParams();
 
   const navigate = useNavigate();
+  const query = searchParams.get("customerId");
 
   const [modifiedSelected, setModifiedSelected] = useState(false);
 
@@ -58,12 +60,20 @@ const PolicyScreen = () => {
     updatePolicies([]);
   }
 
-  async function onEmployeeActionChange(policyId, role, url) {
+  async function onEmployeeActionChange(
+    policyId,
+    role,
+    url,
+    customerId = null,
+    version = null
+  ) {
     try {
       const policyResponse = await API.post(url, {
         userId: user.id,
         policyId,
         ...(role !== undefined ? { role } : {}),
+        ...(customerId !== undefined ? { customerId } : {}),
+        ...(version !== undefined ? { version } : {}),
       });
 
       if (policyResponse.data.statusCode === 500) {
@@ -124,7 +134,13 @@ const PolicyScreen = () => {
         <AcknowledgeCont>
           <StyledCheckbox
             onChange={() =>
-              onEmployeeActionChange(record.id, user.role, "acknowledge_policy")
+              onEmployeeActionChange(
+                record.id,
+                user.role,
+                "acknowledge_policy",
+                searchParams.get("customerId"),
+                record.version
+              )
             }
             checked={record.acknowledged}
           />
