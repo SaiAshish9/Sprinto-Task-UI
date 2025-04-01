@@ -34,14 +34,6 @@ const App = () => {
     if (user) {
       await updateUser(JSON.parse(user));
     }
-
-    // if (users) {
-    //   await updateUsers(JSON.parse(users));
-    // }
-
-    // if (policies) {
-    //   await updatePolicies(JSON.parse(policies));
-    // }
   }
 
   useEffect(() => {
